@@ -81,8 +81,6 @@ def synth_command(args):
                 embedding = morph_embeddings(embedding, emb2, opts.blend)
             lang_model = get_model_for_locale(opts.locale)
             model_path = lang_model.model_path
-            if not os.path.exists(model_path):
-                raise RuntimeError(f"Model file not found: {model_path}")
             session = ONNXSession(model_path)
             seg_rate = opts.rate * seg.rate
             seg_pitch = opts.pitch + seg.pitch

@@ -1,9 +1,17 @@
-import numpy as np
+try:
+    import numpy as np
+    USE_NUMPY = True
+except ImportError:
+    USE_NUMPY = False
+    np = None
 import os
 import hashlib
 from voice import get_voice_metadata
 
 def load_embedding(voice_name: str) -> list:
+    if not USE_NUMPY:
+        print("NumPy not available, using dummy embedding")
+        return [0.5] * 256
     try:
         meta = get_voice_metadata(voice_name)
         path = f"voices/{voice_name}.bin"

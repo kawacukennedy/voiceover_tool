@@ -1,7 +1,21 @@
-from pydub import AudioSegment
-import numpy as np
+try:
+    from pydub import AudioSegment
+    USE_PYDUB = True
+except ImportError:
+    USE_PYDUB = False
+    AudioSegment = None
+
+try:
+    import numpy as np
+    USE_NUMPY = True
+except ImportError:
+    USE_NUMPY = False
+    np = None
 
 def encode_mp3(pcm: list, output_path: str, bitrate=320, title='', artist='', album=''):
+    if not USE_NUMPY or not USE_PYDUB:
+        print("NumPy or pydub not available, skipping MP3 encoding")
+        return False
     # Convert to pydub
     audio = np.array(pcm, dtype=np.float32)
     audio = (audio * 32767).astype(np.int16)

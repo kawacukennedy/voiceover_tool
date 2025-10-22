@@ -1,7 +1,15 @@
-import numpy as np
+try:
+    import numpy as np
+    USE_NUMPY = True
+except ImportError:
+    USE_NUMPY = False
+    np = None
 from advanced_audio import apply_parametric_eq, apply_dithering
 
 def postprocess_audio(audio: list, eq_preset='neutral', target_lufs=-16.0, dither_bits=16):
+    if not USE_NUMPY:
+        print("NumPy not available, skipping postprocessing")
+        return
     # Normalize
     max_val = max(abs(x) for x in audio) if audio else 1.0
     if max_val > 0:

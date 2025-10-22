@@ -1,26 +1,42 @@
-import onnxruntime as ort
-import numpy as np
+try:
+    import onnxruntime as ort
+    USE_ONNX = True
+except ImportError:
+    USE_ONNX = False
+    ort = None
+
+try:
+    import numpy as np
+    USE_NUMPY = True
+except ImportError:
+    USE_NUMPY = False
+    np = None
 
 class ONNXSession:
     def __init__(self, model_path):
-        try:
-            self.session = ort.InferenceSession(model_path)
-            self.input_names = [i.name for i in self.session.get_inputs()]
-            self.output_names = [o.name for o in self.session.get_outputs()]
-        except Exception as e:
-            print(f"ONNX Runtime not available, using dummy: {e}")
+        if USE_ONNX:
+            try:
+                self.session = ort.InferenceSession(model_path)
+                self.input_names = [i.name for i in self.session.get_inputs()]
+                self.output_names = [o.name for o in self.session.get_outputs()]
+            except Exception as e:
+                print(f"ONNX Runtime error, using dummy: {e}")
+                self.session = None
+        else:
+            print("ONNX Runtime not available, using dummy implementation")
             self.session = None
 
     def run_inference(self, tokens, embedding, rate=1.0, pitch=0.0, volume=1.0, emotion='neutral', jitter=0.0, shimmer=0.0):
-        if self.session is None:
+        if self.session is None or not USE_NUMPY:
             # Dummy
-            audio = np.random.randn(44100).astype(np.float32) * 0.1
+            import random
+            audio = [random.gauss(0, 0.1) for _ in range(44100)]
             # Apply jitter/shimmer
             for i in range(len(audio)):
-                audio[i] += jitter * (np.random.rand() - 0.5)
+                audio[i] += jitter * (random.random() - 0.5)
                 if i > 0:
                     audio[i] += shimmer * (audio[i] - audio[i-1])
-            return audio.tolist()
+            return audio
 
         # Prepare inputs
         inputs = {
