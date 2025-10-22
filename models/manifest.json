@@ -1,0 +1,24 @@
+{
+  "models": {
+    "tts.onnx": {
+      "checksum": "dummy_sha256",
+      "locale": "en-US",
+      "sample_rate": 44100
+    },
+    "tts_en.onnx": {
+      "checksum": "dummy_sha256_en",
+      "locale": "en-US",
+      "sample_rate": 44100
+    },
+    "tts_es.onnx": {
+      "checksum": "dummy_sha256_es",
+      "locale": "es-ES",
+      "sample_rate": 44100
+    },
+    "tts_fr.onnx": {
+      "checksum": "dummy_sha256_fr",
+      "locale": "fr-FR",
+      "sample_rate": 44100
+    }
+  }
+}
