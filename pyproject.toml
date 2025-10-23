@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "offline-tts"
+version = "1.0.0"
+description = "Offline Python TTS Voiceover Tool"
+authors = ["Your Name <your.email@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+onnxruntime = "^1.15.0"
+numpy = "^1.21.0"
+scipy = "^1.7.0"
+librosa = "^0.9.0"
+pydub = "^0.25.0"
+flask = "^2.0.0"
+pytest = "^7.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pyinstaller = "^5.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
