@@ -1,0 +1,198 @@
+{
+  "project": {
+    "name": "Offline-Python-TTS-Voiceover-Tool",
+    "summary": "Compact high-quality fully offline Python application that performs multi-voice neural text-to-speech and exports 320kbps MP3 voiceovers. No external network calls. Uses ONNX Runtime with quantized VITS models, pydub and lameenc for MP3 encoding, speaker embeddings, voice cloning pipeline, batching, and minimal GUI.",
+    "goals": [
+      "Fully offline operation",
+      "Professional quality natural speech suitable for narration and voiceover work",
+      "MP3 output at 320kbps constant bitrate with ID3 metadata support",
+      "Single-file distribution under 100MB for Linux, macOS, and Windows",
+      "Multiple voice support via compact speaker embeddings",
+      "Low latency synthesis with quantized ONNX models",
+      "CLI-first user experience with optional minimal GUI built with Tkinter",
+      "Reproducible builds with Poetry and PyInstaller"
+    ],
+    "constraints": {
+      "bitrate_kbps": 320,
+      "offline_only": true,
+      "primary_language": "en-US",
+      "max_package_size_mb": 100,
+      "max_peak_ram_mb": 400,
+      "target_latency_ms": 100,
+      "model_format": "ONNX quantized INT8 or FP16",
+      "packaging": "Single executable with embedded voice bank folder",
+      "license": "MIT-compatible for application code with model license documented separately"
+    }
+  },
+  "technical_stack": {
+    "language": "Python 3.11",
+    "build_system": "Poetry + PyInstaller",
+    "inference_engine": "ONNX Runtime with CPUExecutionProvider",
+    "model_architecture": "VITS multi-speaker converted to ONNX and quantized",
+    "mp3_encoder": "lameenc via pydub",
+    "audio_internal_format": "PCM 16-bit little-endian",
+    "gui_framework": "Tkinter for lightweight GUI",
+    "cli_parser": "argparse",
+    "logging": "rich + logging",
+    "testing_framework": "pytest",
+    "platforms": ["Linux", "macOS", "Windows"],
+    "optimizations": ["Thread pooling for parallel synthesis", "Model quantization", "Lazy-loading of voices", "Memory-mapped model weights"]
+  },
+  "features": {
+    "core_features": {
+      "text_input_methods": [
+        "Inline text input",
+        "Text file input with UTF-8",
+        "Batch directory synthesis",
+        "Local REST API for programmatic access"
+      ],
+      "text_processing": [
+        "Unicode normalization",
+        "Abbreviation expansion",
+        "Automatic pause insertion at punctuation",
+        "Grapheme-to-phoneme conversion",
+        "Subset of SSML tag support: break, emphasis, prosody, phoneme",
+        "Custom pronunciation dictionary support"
+      ],
+      "inference_and_model": [
+        "ONNX model loading and execution",
+        "Speaker embedding injection",
+        "Chunked synthesis for long text",
+        "Batch synthesis support",
+        "Deterministic synthesis when seeded"
+      ],
+      "audio_output_and_encoding": [
+        "PCM buffer generation",
+        "WAV export for debugging",
+        "MP3 encoding at 320kbps",
+        "ID3 metadata support",
+        "Loudness normalization to target LUFS",
+        "Automatic gain control",
+        "Dithering with selectable algorithms"
+      ],
+      "voice_management": [
+        "Voice bank directory with per-voice metadata JSON",
+        "List available voices",
+        "Import embedding files",
+        "Preview voices via system audio",
+        "Voice metadata editing",
+        "Sample audio per voice"
+      ],
+      "voice_cloning_pipeline": [
+        "Voice embedding extractor using pretrained encoder",
+        "GPU acceleration if available",
+        "Minimum 30 seconds sample requirement",
+        "VAD trimming and normalization",
+        "Cross-platform embedding compatibility"
+      ],
+      "user_interface_and_cli": [
+        "CLI subcommands: synth, synth-file, batch, list-voices, import-voice, preview-voice",
+        "CLI flags for bitrate, normalization, output path, metadata",
+        "Tkinter GUI with tabs: Home, Voices, Queue, Settings, About",
+        "Voice preview and drag-drop import",
+        "Render queue with progress bar"
+      ],
+      "integration_api": [
+        "Local REST JSON API on localhost",
+        "Endpoints: /synth, /voices, /status",
+        "CORS disabled by default",
+        "JSON request/response format"
+      ],
+      "security_and_privacy": [
+        "No telemetry",
+        "Checksum verification of models",
+        "HTTP server restricted to localhost",
+        "Permission control for embeddings directory"
+      ]
+    },
+    "advanced_features": {
+      "prosody_and_controls": [
+        "Per-phrase pitch, rate, and volume control",
+        "Breath and emphasis markers",
+        "Phoneme-level timing adjustment"
+      ],
+      "voice_synthesis_enhancements": [
+        "Speaker morphing between two embeddings",
+        "Emotion tokens for neutral, happy, sad, angry",
+        "EQ presets per voice"
+      ],
+      "audio_post_processing": [
+        "Noise gate",
+        "3-band EQ",
+        "Compressor and limiter",
+        "Stereo imaging control",
+        "Silence trimming"
+      ],
+      "timing_and_subtitles": [
+        "Word-level timestamps JSON",
+        "Subtitle export in SRT and VTT",
+        "Chapter markers for long files"
+      ],
+      "streaming_and_low_latency": [
+        "Chunked real-time playback",
+        "PCM streaming API",
+        "Thread priority control"
+      ],
+      "multilingual_support": [
+        "Multi-language models with locale metadata",
+        "Automatic language detection",
+        "Language-specific G2P rules"
+      ]
+    },
+    "usability_and_documentation": {
+      "documentation": [
+        "Bundled HTML docs",
+        "Man page",
+        "Build and usage guides",
+        "Troubleshooting section",
+        "Voice creation tutorial"
+      ],
+      "examples_and_templates": [
+        "Sample scripts and outputs",
+        "Sample voice pack",
+        "Unit and integration tests",
+        "Build automation scripts"
+      ],
+      "accessibility": [
+        "High contrast theme",
+        "Keyboard navigation",
+        "Screen reader support"
+      ]
+    },
+    "packaging_and_distribution": {
+      "release_artifacts": [
+        "Single executable via PyInstaller",
+        "Voice pack and documentation folders",
+        "SHA256 checksum files",
+        "Digital signatures"
+      ],
+      "installers": [
+        "Windows installer via NSIS",
+        "Linux .deb builder script"
+      ],
+      "versioning_and_updates": [
+        "Semantic versioning",
+        "Offline model manifest",
+        "Manual update via CLI command"
+      ]
+    }
+  },
+  "implementation_plan": {
+    "milestone_1": {
+      "title": "Core CLI and inference",
+      "tasks": ["Implement ONNX Runtime integration", "Implement embedding loader", "Add WAV/MP3 export", "Add synth CLI"]
+    },
+    "milestone_2": {
+      "title": "Voice management and packaging",
+      "tasks": ["Implement voice bank system", "Import/list voices", "Optimize build size", "Add voice samples"]
+    },
+    "milestone_3": {
+      "title": "Advanced features and GUI",
+      "tasks": ["Add prosody controls", "Add REST API", "Add Tkinter GUI", "Write docs"]
+    },
+    "milestone_4": {
+      "title": "Testing and release",
+      "tasks": ["Run QA tests", "Build binaries", "Sign artifacts", "Publish release"]
+    }
+  }
+}

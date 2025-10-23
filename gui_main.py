@@ -1,140 +1,147 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QComboBox, QLineEdit, QLabel, QWidget, QTabWidget, QListWidget, QProgressBar, QFileDialog, QMessageBox, QInputDialog
-from PyQt6.QtCore import QThread, pyqtSignal
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox, simpledialog
+import threading
 from voice import list_voices
 from cli import run_cli
 
-class SynthWorker(QThread):
-    finished = pyqtSignal(str)
-
-    def __init__(self, args):
+class SynthWorker(threading.Thread):
+    def __init__(self, args, callback):
         super().__init__()
         self.args = args
+        self.callback = callback
 
     def run(self):
         try:
             run_cli(self.args)
-            self.finished.emit("Synthesis completed")
+            self.callback("Synthesis completed")
         except Exception as e:
-            self.finished.emit(f"Error: {e}")
+            self.callback(f"Error: {e}")
 
-class MainWindow(QMainWindow):
+class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Offline TTS")
-        self.setGeometry(100, 100, 800, 600)
+        self.title("Offline TTS")
+        self.geometry("800x600")
 
-        tabs = QTabWidget()
-        self.setCentralWidget(tabs)
+        self.notebook = ttk.Notebook(self)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
 
-        # Home tab
-        home_tab = QWidget()
-        layout = QVBoxLayout(home_tab)
-        layout.addWidget(QLabel("Text:"))
-        self.text_edit = QTextEdit()
-        layout.addWidget(self.text_edit)
-        layout.addWidget(QLabel("Voice:"))
-        self.voice_combo = QComboBox()
+        self.create_home_tab()
+        self.create_voice_tab()
+        self.create_queue_tab()
+        self.create_settings_tab()
+        self.create_about_tab()
+
+    def create_home_tab(self):
+        frame = ttk.Frame(self.notebook)
+        self.notebook.add(frame, text="Home")
+
+        ttk.Label(frame, text="Text:").pack(anchor=tk.W, padx=10, pady=5)
+        self.text_edit = tk.Text(frame, height=10)
+        self.text_edit.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+        ttk.Label(frame, text="Voice:").pack(anchor=tk.W, padx=10, pady=5)
+        self.voice_combo = ttk.Combobox(frame)
         voices = list_voices()
-        for v in voices:
-            self.voice_combo.addItem(v.name)
-        layout.addWidget(self.voice_combo)
-        layout.addWidget(QLabel("Output:"))
-        self.output_edit = QLineEdit("output.mp3")
-        layout.addWidget(self.output_edit)
-        self.synth_button = QPushButton("Synthesize")
-        self.synth_button.clicked.connect(self.on_synth)
-        layout.addWidget(self.synth_button)
-        tabs.addTab(home_tab, "Home")
+        self.voice_combo['values'] = [v.name for v in voices]
+        if voices:
+            self.voice_combo.current(0)
+        self.voice_combo.pack(fill=tk.X, padx=10, pady=5)
 
-        # Voice Manager tab
-        voice_tab = QWidget()
-        layout = QVBoxLayout(voice_tab)
-        self.voice_list = QListWidget()
+        ttk.Label(frame, text="Output:").pack(anchor=tk.W, padx=10, pady=5)
+        self.output_edit = ttk.Entry(frame)
+        self.output_edit.insert(0, "output.mp3")
+        self.output_edit.pack(fill=tk.X, padx=10, pady=5)
+
+        self.synth_button = ttk.Button(frame, text="Synthesize", command=self.on_synth)
+        self.synth_button.pack(pady=10)
+
+    def create_voice_tab(self):
+        frame = ttk.Frame(self.notebook)
+        self.notebook.add(frame, text="Voice Manager")
+
+        self.voice_list = tk.Listbox(frame)
+        self.voice_list.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.update_voice_list()
-        layout.addWidget(self.voice_list)
-        import_button = QPushButton("Import Voice")
-        import_button.clicked.connect(self.on_import_voice)
-        layout.addWidget(import_button)
-        preview_button = QPushButton("Preview")
-        preview_button.clicked.connect(self.on_preview_voice)
-        layout.addWidget(preview_button)
-        tabs.addTab(voice_tab, "Voice Manager")
 
-        # Render Queue tab
-        render_tab = QWidget()
-        layout = QVBoxLayout(render_tab)
-        self.queue_list = QListWidget()
-        layout.addWidget(self.queue_list)
-        add_button = QPushButton("Add to Queue")
-        add_button.clicked.connect(self.on_add_to_queue)
-        layout.addWidget(add_button)
-        self.progress_bar = QProgressBar()
-        layout.addWidget(self.progress_bar)
-        start_button = QPushButton("Start Render")
-        start_button.clicked.connect(self.on_start_render)
-        layout.addWidget(start_button)
-        tabs.addTab(render_tab, "Render Queue")
+        button_frame = ttk.Frame(frame)
+        button_frame.pack(fill=tk.X, padx=10, pady=5)
 
-        # Settings tab
-        settings_tab = QWidget()
-        layout = QVBoxLayout(settings_tab)
-        layout.addWidget(QLabel("Settings placeholder"))
-        tabs.addTab(settings_tab, "Settings")
+        ttk.Button(button_frame, text="Import Voice", command=self.on_import_voice).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Preview", command=self.on_preview_voice).pack(side=tk.LEFT, padx=5)
 
-        # About tab
-        about_tab = QWidget()
-        layout = QVBoxLayout(about_tab)
-        layout.addWidget(QLabel("Offline TTS v1.0.0"))
-        tabs.addTab(about_tab, "About")
+    def create_queue_tab(self):
+        frame = ttk.Frame(self.notebook)
+        self.notebook.add(frame, text="Render Queue")
+
+        self.queue_list = tk.Listbox(frame)
+        self.queue_list.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        button_frame = ttk.Frame(frame)
+        button_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        ttk.Button(button_frame, text="Add to Queue", command=self.on_add_to_queue).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Start Render", command=self.on_start_render).pack(side=tk.LEFT, padx=5)
+
+        self.progress_bar = ttk.Progressbar(frame, mode='determinate')
+        self.progress_bar.pack(fill=tk.X, padx=10, pady=5)
+
+    def create_settings_tab(self):
+        frame = ttk.Frame(self.notebook)
+        self.notebook.add(frame, text="Settings")
+        ttk.Label(frame, text="Settings placeholder").pack(pady=20)
+
+    def create_about_tab(self):
+        frame = ttk.Frame(self.notebook)
+        self.notebook.add(frame, text="About")
+        ttk.Label(frame, text="Offline TTS v1.0.0").pack(pady=20)
 
     def on_synth(self):
-        text = self.text_edit.toPlainText()
-        voice = self.voice_combo.currentText()
-        output = self.output_edit.text()
+        text = self.text_edit.get("1.0", tk.END).strip()
+        voice = self.voice_combo.get()
+        output = self.output_edit.get()
+        if not text or not voice:
+            messagebox.showerror("Error", "Text and voice are required")
+            return
         args = ['synth', '--text', text, '--voice', voice, '--out', output]
-        self.worker = SynthWorker(args)
-        self.worker.finished.connect(self.on_synth_finished)
-        self.worker.start()
-        self.synth_button.setEnabled(False)
+        self.synth_button.config(state=tk.DISABLED)
+        worker = SynthWorker(args, self.on_synth_finished)
+        worker.start()
 
     def on_synth_finished(self, message):
-        self.synth_button.setEnabled(True)
-        QMessageBox.information(self, "Result", message)
+        self.synth_button.config(state=tk.NORMAL)
+        messagebox.showinfo("Result", message)
 
     def on_import_voice(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Embedding File")
+        file_path = filedialog.askopenfilename(title="Select Embedding File")
         if file_path:
-            name, ok = QInputDialog.getText(self, "Voice Name", "Enter voice name:")
-            if ok and name:
+            name = simpledialog.askstring("Voice Name", "Enter voice name:")
+            if name:
                 args = ['import-voice', file_path, '--name', name]
                 run_cli(args)
                 self.update_voice_list()
 
     def on_preview_voice(self):
-        current = self.voice_list.currentItem()
-        if current:
-            voice = current.text().split()[0]
+        selection = self.voice_list.curselection()
+        if selection:
+            voice = self.voice_list.get(selection[0]).split()[0]
             args = ['preview-voice', voice]
             run_cli(args)
 
     def on_add_to_queue(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Text File")
+        file_path = filedialog.askopenfilename(title="Select Text File")
         if file_path:
-            self.queue_list.addItem(file_path)
+            self.queue_list.insert(tk.END, file_path)
 
     def on_start_render(self):
-        # Placeholder for batch processing
-        QMessageBox.information(self, "Render", "Batch rendering not fully implemented in GUI yet")
+        messagebox.showinfo("Render", "Batch rendering not fully implemented in GUI yet")
 
     def update_voice_list(self):
-        self.voice_list.clear()
+        self.voice_list.delete(0, tk.END)
         voices = list_voices()
         for v in voices:
-            self.voice_list.addItem(f"{v.name} ({v.gender}, {v.locale})")
+            self.voice_list.insert(tk.END, f"{v.name} ({v.gender}, {v.locale})")
 
 def gui_main():
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+    app = MainWindow()
+    app.mainloop()

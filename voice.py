@@ -62,7 +62,20 @@ def import_voice(embedding_path: str, name: str) -> bool:
         }
         with open(json_path, 'w') as f:
             json.dump(data, f, indent=4)
+        # Generate sample audio
+        generate_voice_sample(name)
         return True
     except Exception as e:
         print(f"Error importing voice: {e}")
         return False
+
+def generate_voice_sample(voice_name: str):
+    try:
+        from cli import run_cli
+        sample_text = f"This is a sample of the {voice_name} voice."
+        output_path = f"voices/{voice_name}_sample.mp3"
+        args = ['synth', '--text', sample_text, '--voice', voice_name, '--out', output_path]
+        run_cli(args)
+        print(f"Generated sample for {voice_name}")
+    except Exception as e:
+        print(f"Error generating sample: {e}")
