@@ -27,8 +27,15 @@ fi
 
 echo "✓ Python $PYTHON_VERSION detected (using $PYTHON_CMD)"
 
+# Check for tkinter
+if ! $PYTHON_CMD -c "import tkinter" 2>/dev/null; then
+    echo "⚠ Warning: Tkinter not available. GUI will not work."
+    echo "On macOS: May need to install Tcl/Tk"
+fi
+
 # Create virtual environment
 echo "Creating virtual environment..."
+rm -rf venv  # Remove any existing venv
 $PYTHON_CMD -m venv venv
 
 # Activate and install dependencies
