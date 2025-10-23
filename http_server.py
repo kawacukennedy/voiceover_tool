@@ -1,11 +1,12 @@
 try:
-    from flask import Flask, request, jsonify
+    from flask import Flask, request, jsonify, Response
     USE_FLASK = True
 except ImportError:
     USE_FLASK = False
     Flask = None
     request = None
     jsonify = None
+    Response = None
 
 import io
 
@@ -35,6 +36,22 @@ if USE_FLASK:
     @app.route('/status', methods=['GET'])
     def status():
         return jsonify({'status': 'running'})
+
+    @app.route('/stream', methods=['POST'])
+    def stream():
+        from cli import run_cli
+        data = request.json
+        text = data.get('text', '')
+        voice = data.get('voice', 'narrator')
+        # Stream PCM
+        def generate():
+            # Placeholder for streaming
+            args = ['synth', '--text', text, '--voice', voice, '--out', '/tmp/stream.mp3']
+            run_cli(args)
+            with open('/tmp/stream.mp3', 'rb') as f:
+                while chunk := f.read(1024):
+                    yield chunk
+        return Response(generate(), mimetype='audio/mpeg')
 
 def start_http_server(port=8080):
     if USE_FLASK:
