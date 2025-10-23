@@ -58,7 +58,7 @@ def synth_command(args):
     parser.add_argument('--pitch', type=float, default=0.0)
     parser.add_argument('--volume', type=float, default=1.0)
     parser.add_argument('--emotion', default='neutral')
-    parser.add_argument('--locale', default='en-US')
+    parser.add_argument('--locale', default='auto')
     parser.add_argument('--dict')
     parser.add_argument('--subtitle')
     parser.add_argument('--chapters')
@@ -69,6 +69,10 @@ def synth_command(args):
     parser.add_argument('--phoneme-subtitles', action='store_true')
     parser.add_argument('--analyze-quality', action='store_true')
     opts = parser.parse_args(args)
+
+    if opts.locale == 'auto':
+        from multilingual import detect_language
+        opts.locale = detect_language(opts.text)
 
     try:
         segments = parse_and_normalize_text(opts.text, opts.locale, opts.dict)

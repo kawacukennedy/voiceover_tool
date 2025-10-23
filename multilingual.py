@@ -1,4 +1,5 @@
 from typing import List
+import re
 
 class LanguageModel:
     def __init__(self, locale, model_path, sample_rate=44100, tokenizer_path=''):
@@ -20,3 +21,12 @@ def get_model_for_locale(locale: str) -> LanguageModel:
         if lang.locale == locale:
             return lang
     return LanguageModel('en-US', 'models/tts.onnx', 44100, 'models/tokenizer_en.json')
+
+def detect_language(text: str) -> str:
+    # Simple heuristic
+    if re.search(r'\b(el|la|los|las|es|son|está)\b', text, re.IGNORECASE):
+        return 'es-ES'
+    elif re.search(r'\b(le|la|les|et|est|dans)\b', text, re.IGNORECASE):
+        return 'fr-FR'
+    else:
+        return 'en-US'
