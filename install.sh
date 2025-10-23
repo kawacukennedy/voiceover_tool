@@ -30,8 +30,8 @@ echo "✓ Python $PYTHON_VERSION detected (using $PYTHON_CMD)"
 # Check for tkinter
 if ! $PYTHON_CMD -c "import tkinter" 2>/dev/null; then
     echo "⚠ Warning: Tkinter not available. GUI will not work."
-    echo "On macOS: Install Tcl/Tk then reinstall Python:"
-    echo "  brew reinstall python@3.12"
+    echo "On macOS: Install python-tk for the Python version:"
+    echo "  brew install python-tk@3.12"
     echo "Then run this installer again."
 else
     echo "✓ Tkinter available"
