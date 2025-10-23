@@ -50,5 +50,33 @@ def tokenize(text: str, locale='en-US') -> List[int]:
     tokens = []
     words = re.findall(r'\b\w+\b', text.lower())
     for word in words:
-        tokens.append(vocab.get(word, 0))
+        if locale == 'en-US':
+            phonemes = grapheme_to_phoneme(word)
+            for p in phonemes:
+                tokens.append(vocab.get(p, 0))
+        else:
+            tokens.append(vocab.get(word, 0))
     return tokens
+
+def grapheme_to_phoneme(word: str) -> List[str]:
+    # Basic G2P for English
+    phonemes = []
+    word = word.lower()
+    i = 0
+    while i < len(word):
+        if word[i:i+2] == 'th':
+            phonemes.append('θ')
+            i += 2
+        elif word[i:i+2] == 'sh':
+            phonemes.append('ʃ')
+            i += 2
+        elif word[i:i+2] == 'ch':
+            phonemes.append('tʃ')
+            i += 2
+        elif word[i] in 'aeiou':
+            phonemes.append(word[i])
+            i += 1
+        else:
+            phonemes.append(word[i])
+            i += 1
+    return phonemes
