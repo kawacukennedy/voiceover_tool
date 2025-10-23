@@ -23,8 +23,18 @@ class MainWindow(tk.Tk):
         self.title("Offline TTS")
         self.geometry("800x600")
 
+        # High contrast theme
+        style = ttk.Style()
+        style.configure('TButton', font=('Arial', 12), padding=10)
+        style.configure('TLabel', font=('Arial', 12))
+        style.configure('TEntry', font=('Arial', 12))
+
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill=tk.BOTH, expand=True)
+
+        # Keyboard navigation
+        self.bind('<Control-s>', lambda e: self.on_synth())
+        self.bind('<Control-i>', lambda e: self.on_import_voice())
 
         self.create_home_tab()
         self.create_voice_tab()
@@ -55,6 +65,7 @@ class MainWindow(tk.Tk):
 
         self.synth_button = ttk.Button(frame, text="Synthesize", command=self.on_synth)
         self.synth_button.pack(pady=10)
+        self.synth_button.focus_set()  # Initial focus
 
     def create_voice_tab(self):
         frame = ttk.Frame(self.notebook)
