@@ -66,6 +66,7 @@ def synth_command(args):
     parser.add_argument('--shimmer', type=float, default=0.0)
     parser.add_argument('--normalize-lufs', type=float, default=-16.0)
     parser.add_argument('--dither-bits', type=int, default=16)
+    parser.add_argument('--eq-preset', default='neutral')
     parser.add_argument('--phoneme-subtitles', action='store_true')
     parser.add_argument('--analyze-quality', action='store_true')
     opts = parser.parse_args(args)
@@ -96,7 +97,7 @@ def synth_command(args):
             else:
                 full_pcm.extend(pcm)
 
-        postprocess_audio(full_pcm, 'neutral', opts.normalize_lufs, opts.dither_bits)
+        postprocess_audio(full_pcm, opts.eq_preset, opts.normalize_lufs, opts.dither_bits)
 
         if opts.analyze_quality:
             report = analyze_audio_quality(full_pcm)
@@ -173,7 +174,7 @@ def stream_command(args):
         def callback(pcm_chunk):
             # In real implementation, stream to audio device
             print(f"Streaming chunk of {len(pcm_chunk)} samples")
-        session.run_streaming_inference(tokens, embedding, callback)
+        session.run_streaming_inference(tokens, embedding, callback, rate=1.0, pitch=0.0, volume=1.0)
         print("Streaming completed")
     except Exception as e:
         print(f"Error: {e}")
@@ -206,7 +207,7 @@ def preview_voice_command(args):
         model_path = get_model_for_locale('en-US').model_path
         session = ONNXSession(model_path)
         pcm = session.run_inference(tokens, embedding)
-        postprocess_audio(pcm)
+        postprocess_audio(pcm, 'neutral', -16.0, 16)
         encode_mp3(pcm, f'/tmp/preview_{opts.voice}.mp3', 320)
         print(f"Preview saved to /tmp/preview_{opts.voice}.mp3")
     except Exception as e:

@@ -60,13 +60,13 @@ class ONNXSession:
         audio = outputs[0][0].tolist()
         return audio
 
-    def run_streaming_inference(self, tokens, embedding, callback):
+    def run_streaming_inference(self, tokens, embedding, callback, rate=1.0, pitch=0.0, volume=1.0):
         chunk_size = 10
         buffer = []
         buffer_size = 1024
         for i in range(0, len(tokens), chunk_size):
             chunk = tokens[i:i+chunk_size]
-            pcm = self.run_inference(chunk, embedding)
+            pcm = self.run_inference(chunk, embedding, rate, pitch, volume)
             buffer.extend(pcm)
             while len(buffer) >= buffer_size:
                 chunk_pcm = buffer[:buffer_size]
