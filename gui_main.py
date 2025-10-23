@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog, messagebox, simpledialog
 import threading
 from voice import list_voices
 from cli import run_cli
+from version import __version__
 
 class SynthWorker(threading.Thread):
     def __init__(self, args, callback):
@@ -105,7 +106,7 @@ class MainWindow(tk.Tk):
     def create_about_tab(self):
         frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text="About")
-        ttk.Label(frame, text="Offline TTS v1.0.0").pack(pady=20)
+        ttk.Label(frame, text=f"Offline TTS v{__version__}").pack(pady=20)
 
     def on_synth(self):
         text = self.text_edit.get("1.0", tk.END).strip()

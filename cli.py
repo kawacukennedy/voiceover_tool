@@ -10,6 +10,7 @@ from subtitle import generate_timestamps, export_srt, export_vtt, export_chapter
 from http_server import start_http_server
 from multilingual import get_model_for_locale
 from quality_metrics import analyze_audio_quality
+from version import __version__
 import os
 
 def run_cli(args):
@@ -36,7 +37,7 @@ def run_cli(args):
     elif command == "bench":
         bench_command()
     elif command == "version":
-        print("Offline TTS v1.0.0")
+        print(f"Offline TTS v{__version__}")
     elif command == "server":
         port = int(args[1]) if len(args) > 1 else 8080
         start_http_server(port)
