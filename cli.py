@@ -127,10 +127,37 @@ def synth_command(args):
 
 # Add other commands similarly, but for brevity, placeholder
 def synth_file_command(args):
-    print("synth-file not implemented yet")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_file')
+    parser.add_argument('--voice', default='narrator')
+    parser.add_argument('--out', default='output.mp3')
+    parser.add_argument('--bitrate', type=int, default=320)
+    opts = parser.parse_args(args)
+    try:
+        with open(opts.input_file, 'r', encoding='utf-8') as f:
+            text = f.read()
+        args_synth = ['synth', '--text', text, '--voice', opts.voice, '--out', opts.out, '--bitrate', str(opts.bitrate)]
+        run_cli(args_synth)
+        print(f"Synthesized from file to {opts.out}")
+    except Exception as e:
+        print(f"Error: {e}")
 
 def batch_command(args):
-    print("batch not implemented yet")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_dir')
+    parser.add_argument('--voice', default='narrator')
+    parser.add_argument('--out-dir', default='output')
+    parser.add_argument('--bitrate', type=int, default=320)
+    opts = parser.parse_args(args)
+    import os
+    os.makedirs(opts.out_dir, exist_ok=True)
+    for file in os.listdir(opts.input_dir):
+        if file.endswith('.txt'):
+            input_path = os.path.join(opts.input_dir, file)
+            output_path = os.path.join(opts.out_dir, file.replace('.txt', '.mp3'))
+            args_file = ['synth-file', input_path, '--voice', opts.voice, '--out', output_path, '--bitrate', str(opts.bitrate)]
+            run_cli(args_file)
+    print(f"Batch synthesis completed in {opts.out_dir}")
 
 def stream_command(args):
     print("stream not implemented yet")
