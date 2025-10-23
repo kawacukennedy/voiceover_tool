@@ -45,6 +45,40 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+### Install TTS Models
+
+The app requires ONNX-formatted TTS models. Models are not included due to licensing restrictions.
+
+#### Option 1: Download Pre-converted Models (Recommended)
+
+```bash
+# Download from a compatible source (check licenses)
+# Place .onnx files in models/ directory
+# Update multilingual.py with correct model paths
+```
+
+#### Option 2: Convert Your Own Models
+
+1. Obtain a VITS model (e.g., from https://github.com/jaywalnut310/vits)
+2. Convert to ONNX format using tools like:
+   - https://github.com/microsoft/onnxruntime
+   - Custom conversion scripts
+3. Place in `models/` directory with appropriate names
+
+#### Model Structure
+
+```
+models/
+├── tts.onnx              # Main TTS model
+├── tts_es.onnx           # Spanish model
+├── tts_fr.onnx           # French model
+├── tokenizer_en.json     # English tokenizer
+├── tokenizer_es.json     # Spanish tokenizer
+└── tokenizer_fr.json     # French tokenizer
+```
+
+Update `multilingual.py` with your model paths and locales.
+
 ### Troubleshooting
 
 If you encounter compatibility issues:
