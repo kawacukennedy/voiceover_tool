@@ -25,14 +25,24 @@ A compact, high-quality, fully offline Python application for neural text-to-spe
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.11 or 3.12 (Python 3.14 not yet supported by ONNX Runtime and Numba)
 - pip
 
 ### Install Dependencies
 
 ```bash
+# Create virtual environment with compatible Python
+python3.11 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
+
+### Troubleshooting
+
+If you encounter compatibility issues:
+- Ensure Python version is 3.11-3.13
+- Update pip: `pip install --upgrade pip`
+- For macOS: `brew install python@3.11` then use `python3.11 -m venv venv`
 
 ## Usage
 
