@@ -12,6 +12,14 @@ A compact, high-quality, fully offline Python application for neural text-to-spe
 - Low latency synthesis with quantized ONNX models
 - CLI-first user experience with optional minimal GUI built with Tkinter
 - Reproducible builds with Poetry and PyInstaller
+- SSML support for prosody, emphasis, and breath
+- Advanced audio post-processing: noise gate, compressor, limiter, silence trimming
+- Automatic language detection and multilingual models
+- Phoneme-level timing and subtitles export (SRT/VTT)
+- Real-time streaming and PCM API
+- Voice cloning pipeline with embedding extraction
+- Batch processing and render queue
+- Accessibility features: keyboard navigation, high contrast theme
 
 ## Installation
 
