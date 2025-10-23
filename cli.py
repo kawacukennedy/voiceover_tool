@@ -85,7 +85,7 @@ def synth_command(args):
             seg_rate = opts.rate * seg.rate
             seg_pitch = opts.pitch + seg.pitch
             seg_volume = opts.volume * seg.volume
-            pcm = session.run_inference(tokens, embedding, seg_rate, seg_pitch, seg_volume, opts.emotion, opts.jitter, opts.shimmer)
+            pcm = session.run_inference(tokens, embedding, seg_rate, seg_pitch, seg_volume, opts.emotion, opts.jitter, opts.shimmer, seg.emphasis, seg.breath)
             if seg.break_time > 0:
                 silence = [0.0] * int(seg.break_time * 44100)
                 full_pcm.extend(silence)
