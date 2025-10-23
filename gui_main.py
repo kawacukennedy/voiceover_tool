@@ -145,7 +145,15 @@ class MainWindow(tk.Tk):
             self.queue_list.insert(tk.END, file_path)
 
     def on_start_render(self):
-        messagebox.showinfo("Render", "Batch rendering not fully implemented in GUI yet")
+        self.progress_bar['value'] = 0
+        total = self.queue_list.size()
+        for i in range(total):
+            file_path = self.queue_list.get(i)
+            output_path = file_path.replace('.txt', '.mp3')
+            args = ['synth-file', file_path, '--out', output_path]
+            run_cli(args)
+            self.progress_bar['value'] = (i + 1) / total * 100
+        messagebox.showinfo("Render", "Batch rendering completed")
 
     def update_voice_list(self):
         self.voice_list.delete(0, tk.END)
