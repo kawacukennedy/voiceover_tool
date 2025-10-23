@@ -30,6 +30,14 @@ A compact, high-quality, fully offline Python application for neural text-to-spe
 
 ### Install Dependencies
 
+Run the automated installer:
+
+```bash
+./install.sh
+```
+
+Or manually:
+
 ```bash
 # Create virtual environment with compatible Python
 python3.11 -m venv venv
