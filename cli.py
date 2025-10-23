@@ -213,4 +213,10 @@ def preview_voice_command(args):
         print(f"Error: {e}")
 
 def bench_command():
-    print("bench not implemented yet")
+    import time
+    sample_text = "This is a benchmark test for the TTS system."
+    start = time.time()
+    args = ['synth', '--text', sample_text, '--out', '/tmp/bench.mp3']
+    run_cli(args)
+    end = time.time()
+    print(f"Benchmark completed in {end - start:.2f} seconds")
