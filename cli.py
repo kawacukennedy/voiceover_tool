@@ -160,7 +160,23 @@ def batch_command(args):
     print(f"Batch synthesis completed in {opts.out_dir}")
 
 def stream_command(args):
-    print("stream not implemented yet")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--text', required=True)
+    parser.add_argument('--voice', default='narrator')
+    opts = parser.parse_args(args)
+    try:
+        segments = parse_and_normalize_text(opts.text)
+        tokens = tokenize(segments[0].text)
+        embedding = load_embedding(opts.voice)
+        model_path = get_model_for_locale('en-US').model_path
+        session = ONNXSession(model_path)
+        def callback(pcm_chunk):
+            # In real implementation, stream to audio device
+            print(f"Streaming chunk of {len(pcm_chunk)} samples")
+        session.run_streaming_inference(tokens, embedding, callback)
+        print("Streaming completed")
+    except Exception as e:
+        print(f"Error: {e}")
 
 def list_voices_command():
     voices = list_voices()
