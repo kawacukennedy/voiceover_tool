@@ -52,10 +52,17 @@ The app requires ONNX-formatted TTS models. Models are not included due to licen
 #### Option 1: Download Pre-converted Models (Recommended)
 
 ```bash
-# Download from a compatible source (check licenses)
+# Download PyTorch models from VITS repository
+# https://drive.google.com/drive/folders/1ksarh-cJf3F5eKJjLVWY0X1j1qsQqiS2?usp=sharing
+
+# Convert to ONNX format using conversion tools
 # Place .onnx files in models/ directory
 # Update multilingual.py with correct model paths
 ```
+
+#### Option 2: Use Provided Placeholders
+
+Placeholder files have been created in `models/` directory. Replace with actual models when available.
 
 #### Option 2: Convert Your Own Models
 
