@@ -5,22 +5,31 @@
 echo "Offline TTS Voiceover Tool Installer"
 echo "====================================="
 
-# Check Python version
-PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}')
-REQUIRED_VERSION="3.11"
+# Check for compatible Python version
+PYTHON_CMD=""
+for cmd in python3.11 python3.12 python3.13 python3; do
+    if command -v $cmd >/dev/null 2>&1; then
+        VERSION=$($cmd --version 2>&1 | awk '{print $2}')
+        if [[ "$VERSION" =~ ^3\.1[0-3]\. ]]; then
+            PYTHON_CMD=$cmd
+            PYTHON_VERSION=$VERSION
+            break
+        fi
+    fi
+done
 
-if [[ "$PYTHON_VERSION" =~ ^3\.1[0-3]\. ]]; then
-    echo "✓ Python $PYTHON_VERSION detected"
-else
-    echo "✗ Python $PYTHON_VERSION not supported. Please use Python 3.11-3.13"
+if [ -z "$PYTHON_CMD" ]; then
+    echo "✗ No compatible Python version found (3.11-3.13 required)"
     echo "On macOS: brew install python@3.11"
     echo "On Linux: apt install python3.11"
     exit 1
 fi
 
+echo "✓ Python $PYTHON_VERSION detected (using $PYTHON_CMD)"
+
 # Create virtual environment
 echo "Creating virtual environment..."
-python3 -m venv venv
+$PYTHON_CMD -m venv venv
 
 # Activate and install dependencies
 echo "Installing dependencies..."
