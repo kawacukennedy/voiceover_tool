@@ -8,7 +8,20 @@ import sys
 
 def build_executable():
     try:
-        subprocess.run([sys.executable, '-m', 'PyInstaller', '--onefile', 'main.py'], check=True)
+        # Optimize for size: exclude unnecessary modules, use UPX if available
+        cmd = [
+            sys.executable, '-m', 'PyInstaller',
+            '--onefile',
+            '--exclude-module', 'matplotlib',
+            '--exclude-module', 'tkinter.test',
+            '--exclude-module', 'test',
+            '--exclude-module', 'unittest',
+            '--exclude-module', 'pdb',
+            '--exclude-module', 'pydoc',
+            '--strip',
+            'main.py'
+        ]
+        subprocess.run(cmd, check=True)
         print("Build completed successfully.")
     except subprocess.CalledProcessError as e:
         print(f"Build failed: {e}")
