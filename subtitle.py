@@ -73,6 +73,12 @@ def export_chapters(timestamps: List[Timestamp], output_path: str, chapter_lengt
             current_time = chap_end
             chapter_num += 1
 
+def export_timestamps_json(timestamps: List[Timestamp], output_path: str):
+    import json
+    data = [{'word': ts.word, 'start': ts.start_time, 'end': ts.end_time} for ts in timestamps]
+    with open(output_path, 'w') as f:
+        json.dump(data, f, indent=2)
+
 def align_timestamps(original: List[Timestamp], new_audio: list) -> List[Timestamp]:
     orig_duration = original[-1].end_time if original else 0
     new_duration = len(new_audio) / 44100.0

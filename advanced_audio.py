@@ -1,5 +1,11 @@
 import math
 
+def apply_3band_eq(audio: list, low_gain: float = 0.0, mid_gain: float = 0.0, high_gain: float = 0.0):
+    # Simple 3-band EQ
+    # Low: <300Hz, Mid: 300-3000Hz, High: >3000Hz
+    # Placeholder: apply gains to frequency ranges
+    pass
+
 def apply_parametric_eq(audio: list, freq: float, gain: float, q: float):
     # Simple biquad filter approximation
     # Placeholder for actual EQ

@@ -36,6 +36,8 @@ def run_cli(args):
         preview_voice_command(args[1:])
     elif command == "bench":
         bench_command()
+    elif command == "extract-voice":
+        extract_voice_command(args[1:])
     elif command == "version":
         print(f"Offline TTS v{__version__}")
     elif command == "server":
@@ -63,6 +65,7 @@ def synth_command(args):
     parser.add_argument('--dict')
     parser.add_argument('--subtitle')
     parser.add_argument('--chapters')
+    parser.add_argument('--timestamps')
     parser.add_argument('--jitter', type=float, default=0.0)
     parser.add_argument('--shimmer', type=float, default=0.0)
     parser.add_argument('--normalize-lufs', type=float, default=-16.0)
@@ -122,6 +125,11 @@ def synth_command(args):
             timestamps = generate_timestamps(opts.text, full_pcm, False)
             export_chapters(timestamps, opts.chapters)
             print(f"Chapters exported to {opts.chapters}")
+
+        if opts.timestamps:
+            timestamps = generate_timestamps(opts.text, full_pcm, opts.phoneme_subtitles)
+            export_timestamps_json(timestamps, opts.timestamps)
+            print(f"Timestamps exported to {opts.timestamps}")
 
         print(f"Synthesized to {opts.out}")
     except Exception as e:
@@ -222,3 +230,19 @@ def bench_command():
     run_cli(args)
     end = time.time()
     print(f"Benchmark completed in {end - start:.2f} seconds")
+
+def extract_voice_command(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('audio_file')
+    parser.add_argument('--output', default='extracted_embedding.bin')
+    opts = parser.parse_args(args)
+    try:
+        from extract_embedding import extract_embedding
+        embedding = extract_embedding(opts.audio_file)
+        with open(opts.output, 'wb') as f:
+            import struct
+            for val in embedding:
+                f.write(struct.pack('f', val))
+        print(f"Embedding extracted to {opts.output}")
+    except Exception as e:
+        print(f"Error: {e}")
